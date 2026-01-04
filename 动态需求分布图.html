@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>开发需求平台分布（动态交互版）</title>
+    <!-- 引入Chart.js（动态图表核心库） -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 600px;
+            height: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>2025下半年开发需求平台分布</h1>
+    <div class="chart-container">
+        <!-- 图表画布（动态图表将渲染在这里） -->
+        <canvas id="demandPieChart"></canvas>
+    </div>
+
+    <script>
+        // 1. 获取画布元素
+        const ctx = document.getElementById('demandPieChart').getContext('2d');
+        
+        // 2. 需求数据（与你的统计一致）
+        const demandData = {
+            labels: ['iOS', '安卓'], // 平台名称
+            datasets: [{
+                label: '需求数量',
+                data: [22, 28], // 需求数量
+                backgroundColor: [
+                    '#FF9999', // iOS 颜色
+                    '#66B2FF'  // 安卓 颜色
+                ],
+                borderColor: '#fff', // 饼图边框颜色
+                borderWidth: 2,      // 饼图边框宽度
+                hoverOffset: 15      // 鼠标悬停时的偏移效果（增强交互感）
+            }]
+        };
+
+        // 3. 图表配置（核心：开启悬停显示数量）
+        const chartConfig = {
+            type: 'pie', // 图表类型：饼图
+            data: demandData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    // 图例配置
+                    legend: {
+                        position: 'right', // 图例在右侧显示
+                        labels: {
+                            font: {
+                                size: 14, // 图例文字大小
+                                weight: 'bold'
+                            },
+                            padding: 20 // 图例间距
+                        }
+                    },
+                    // 悬停提示配置（鼠标经过显示数量）
+                    tooltip: {
+                        enabled: true, // 开启悬停提示
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)', // 提示框背景色
+                        titleFont: { size: 16, weight: 'bold' }, // 提示框标题样式
+                        bodyFont: { size: 14 }, // 提示框内容样式
+                        padding: 12, // 提示框内边距
+                        cornerRadius: 8, // 提示框圆角
+                        // 自定义提示内容（显示“平台+数量+占比”）
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1); // 计算占比
+                                return `${label}: ${value}个（${percentage}%）`;
+                            }
+                        }
+                    },
+                    // 标题配置
+                    title: {
+                        display: true,
+                        text: `需求总数：${demandData.datasets[0].data.reduce((a,b)=>a+b,0)}个`,
+                        font: { size: 16, weight: 'bold' },
+                        padding: { bottom: 20 }
+                    }
+                },
+                // 饼图动画（加载时的过渡效果）
+                animation: {
+                    animateScale: true, // 缩放动画
+                    animateRotate: true // 旋转动画
+                }
+            }
+        };
+
+        // 4. 渲染图表（生成动态交互饼图）
+        new Chart(ctx, chartConfig);
+    </script>
+</body>
+</html>
